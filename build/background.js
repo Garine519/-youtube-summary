@@ -1,6 +1,3 @@
-// Assuming you have stored the data received from content script
-// let storedData;
-
 const summaryEndpoint = "https://youtube-summarize-app.fly.dev/summary";
 
 chrome.runtime.onConnect.addListener(async (port) => {
