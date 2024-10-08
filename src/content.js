@@ -19,7 +19,7 @@ const retrieveVideoId = (videoId) => {
   throw new Error("Impossible to retrieve Youtube video ID.");
 };
 
-// Loop through each script tag and log its content
+// Loop through each script tag and find the one that contains the context object
 const getContextObject = () => {
   let contextObject = {};
   let params = "";
@@ -67,27 +67,3 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     sendResponse({ videoId, params, contextObject });
   }
 });
-
-// const fetchTranscript = async () => {
-//   try {
-//     const videoId = retrieveVideoId(location.href);
-//     chrome.runtime.sendMessage({
-//       action: "fetchData",
-//       videoId,
-//       data: {
-//         contextObject,
-//         params,
-//       },
-//     });
-//   } catch (error) {
-//     chrome.runtime.sendMessage({
-//       status: "error",
-//       message: "saveData",
-//       error: error.message,
-//     });
-//   }
-// };
-
-// fetchTranscript();
-
-// Additional safety: Observe DOM changes for any missed URL updates

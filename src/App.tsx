@@ -44,7 +44,6 @@ function App() {
       setIsYoutubeVideo(false);
       return;
     }
-    console.log("currentUrl", currentUrl);
     setIsYoutubeVideo(true);
   }, [currentUrl]);
 
