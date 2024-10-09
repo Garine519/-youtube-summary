@@ -10,6 +10,7 @@
     "service_worker": "background.js"
   },
   "host_permissions": [
+    "http://localhost:3000/summary",
     "https://youtube-summarize-app.fly.dev/summary"
   ],
   "permissions": ["activeTab", "tabs", "scripting", "storage"]

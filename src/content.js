@@ -1,5 +1,3 @@
-if (!window.isContentScriptInjected) window.isContentScriptInjected = true;
-
 const scripts = document.querySelectorAll("script");
 const RE_YOUTUBE =
   /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
@@ -63,6 +61,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   // Send a response back to the background script
   if (request.action === "getContextObjectAndParams") {
     const { params, contextObject } = getContextObject();
+    if (!params) throw new Error("Cannot summarize this video.");
     const videoId = retrieveVideoId(currentUrl);
     sendResponse({ videoId, params, contextObject });
   }

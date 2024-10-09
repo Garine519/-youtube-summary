@@ -31,7 +31,7 @@ const getContextAndFetchSummary = async () => {
         chrome.tabs
           .sendMessage(tabId, { action: "getContextObjectAndParams" })
           .then(async (message) => {
-            if (message.videoId === undefined) return;
+            if (message?.videoId === undefined) return;
             const { contextObject, params, videoId } = message;
             const response = await fetchTranscript({
               contextObject,
