@@ -46,13 +46,13 @@ const Summary = ({ onSummaryFetch = () => {}, ...props }: SummaryProps) => {
 
   const successState = (
     <div className="text-neutral-600">
-      <ReactMarkdown>{data?.data}</ReactMarkdown>
+      <ReactMarkdown>{data}</ReactMarkdown>
     </div>
   );
 
   const errorState = (
     <>
-    <div className="text-red-500 text-base">Oops! {error?.message}</div>
+    <div className="text-red-500 text-base">Oops! {error}</div>
     <p>
         Please try again.
     </p>
