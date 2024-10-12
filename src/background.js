@@ -1,5 +1,4 @@
-// const summaryEndpoint = "https://youtube-summarize-app.fly.dev/summary";
-const summaryEndpoint = "http://localhost:3000/summary";
+const summaryEndpoint = "https://youtube-summarize-app.fly.dev/summary";
 const RE_YOUTUBE =
   /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
 
