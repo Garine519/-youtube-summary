@@ -14,8 +14,9 @@ const Summary = ({ onSummaryFetch = () => {}, ...props }: SummaryProps) => {
   const [state, setState] = useState<
     "idle" | "loading" | "success" | "error" | "unavailable"
   >("idle");
-  const [buttonLabel, setButtonLabel] = useState<string>("Fetch Summary");
+  const [buttonLabel, setButtonLabel] = useState<string>("Summarize video");
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isCopied, setIsCopied] = useState<boolean>(false);
 
   useEffect(() => {
     if (data) {
@@ -25,6 +26,7 @@ const Summary = ({ onSummaryFetch = () => {}, ...props }: SummaryProps) => {
     } else if (unavailable) {
       setState("unavailable");
     }
+    setIsLoading(false);
   }, [data, error, unavailable]);
 
   const unavailableState = (
@@ -36,14 +38,6 @@ const Summary = ({ onSummaryFetch = () => {}, ...props }: SummaryProps) => {
     </div>
   );
 
-  //   const loadingState = (
-  //     <div className="flex items-center justify-center">
-  //       <div className="w-20">
-  //         <Loading />
-  //       </div>
-  //     </div>
-  //   );
-
   const successState = (
     <div className="text-neutral-600">
       <ReactMarkdown>{data}</ReactMarkdown>
@@ -52,16 +46,20 @@ const Summary = ({ onSummaryFetch = () => {}, ...props }: SummaryProps) => {
 
   const errorState = (
     <>
-    <div className="text-red-500 text-base">Oops! {error}</div>
-    <p>
-        Please try again.
-    </p>
+      <div className="text-red-500 text-base">Oops! {error}</div>
+      <p>Please try again.</p>
     </>
   );
 
   const fetchSummary = () => {
     setIsLoading(true);
-    setButtonLabel("Fetching Summary...");
+    setButtonLabel("Summarizing...");
+    setTimeout(() => {
+      setButtonLabel("Almost there...");
+    }, 4000);
+    setTimeout(() => {
+      setButtonLabel("Hold on a little bit more...");
+    }, 8000);
     onSummaryFetch();
   };
 
@@ -76,14 +74,30 @@ const Summary = ({ onSummaryFetch = () => {}, ...props }: SummaryProps) => {
     }
   };
 
+  const copySummary = () => {
+    navigator.clipboard.writeText(data || "");
+    setIsCopied(true);
+    setTimeout(() => {
+      setIsCopied(false);
+    }, 2000);
+  };
+
   return (
-    <div
-      className={`text-base flex flex-col border border-solid p-4 border-grey-200 rounded-lg w-96`}
-    >
+    <div className={`text-base flex flex-col p-4 border-grey-200 w-96`}>
       <div className="mb-4">
-        <h1 className="text-xl text-primary-700 mb-6">Video Summary</h1>
+        <header className="flex justify-between items-center mb-6">
+          <h1 className="text-xl text-primary-700">Video Summary</h1>
+          {data ? (
+            <Button
+              size="small"
+              label={isCopied ? "Copied to Clipboard" : "Copy"}
+              disabled={isCopied}
+              onClick={copySummary}
+            ></Button>
+          ) : null}
+        </header>
         <div className="mb-6">{getState()}</div>
-        {state !== "success" && state !== 'unavailable' ? (
+        {state !== "success" && state !== "unavailable" ? (
           <div className="flex items-center justify-center">
             <Button
               disabled={isLoading}

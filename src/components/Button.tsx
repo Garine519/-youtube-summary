@@ -7,6 +7,8 @@ export interface ButtonProps {
   size?: "small" | "default" | "large";
   /** Button contents */
   label: string;
+  /** Optional additional classes */
+  className?: string;
   /** Optional disabled state */
   disabled?: boolean;
   /** Optional click handler */
@@ -15,10 +17,11 @@ export interface ButtonProps {
 
 /** Primary UI component for user interaction */
 const Button = ({
-  primary = false,
+  primary = true,
   size = "default",
   loading = false,
   disabled = false,
+  className = "",
   label,
   ...props
 }: ButtonProps) => {
@@ -40,6 +43,7 @@ const Button = ({
         "disabled:opacity-50 disabled:pointer-events-none",
         sizeStyles[size],
         modeStyles,
+        className
       ].join(" ")}
       {...props}
     >
