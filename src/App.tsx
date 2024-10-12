@@ -7,27 +7,30 @@ function App() {
   const [isYoutubeVideo, setIsYoutubeVideo] = useState<boolean>(true);
   const [data, setData] = useState<string>("");
   const [error, setError] = useState<string | undefined>();
-  const [currentUrl, setCurrentUrl] = useState<string>("");
-
-  // Function to get the current tab's URL
-  const setCurrentTabUrl = () => {
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      const tab = tabs[0]; // Get the first (active) tab
-      if (tab && tab.url) setCurrentUrl(tab.url); // Set the URL state
-    });
-  };
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     if (!chrome || !chrome.runtime || !chrome.tabs) return;
-    const port = chrome.runtime.connect({ name: "popupOpened" });
+    const init = () => {
+      chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+        const activeTab = tabs[0];
+        // Check if the current tab is a YouTube video page
+        const currentPath = new URL(activeTab.url as string);
+        if (!currentPath.href.includes("youtube.com/watch")) {
+          setIsYoutubeVideo(false);
+          return;
+        }
 
-    port.onDisconnect.addListener(() => {
-      console.log("Popup closed");
-    });
-
-    setCurrentTabUrl();
+        setIsYoutubeVideo(true);
+        chrome.runtime.sendMessage({
+          action: "popup_fetchData",
+          storageOnly: true,
+        });
+      });
+    };
     chrome.runtime.onMessage.addListener(function (request) {
-      if (request.message === "data") {
+      setLoading(false);
+      if (request.message === "bg_data") {
         if (request.data) {
           setData(request.data);
         }
@@ -36,26 +39,24 @@ function App() {
         }
       }
     });
+    init();
   }, []);
 
-  useEffect(() => {
+  const fetchSummary = () => {
     if (!chrome || !chrome.runtime || !chrome.tabs) return;
-    if (!currentUrl.includes("youtube.com/watch")) {
-      setIsYoutubeVideo(false);
-      return;
-    }
-    setIsYoutubeVideo(true);
-  }, [currentUrl]);
+    setLoading(true);
+    chrome.runtime.sendMessage({ action: "popup_fetchData" });
+  };
 
   return (
     <div
-      className={`text-base border border-solid p-4 border-neutral-200 rounded w-96`}
+      className={`text-base flex flex-col border border-solid p-4 border-neutral-200 rounded w-96`}
     >
       <h1 className="text-2xl text-primary-700 mb-2">Video Summary</h1>
 
       {isYoutubeVideo ? (
         <>
-          {!error && !data ? (
+          {loading ? (
             <div className="flex items-center justify-center">
               <div className="w-20">
                 <Loading />
@@ -67,7 +68,15 @@ function App() {
             <div className="text-neutral-600">
               <ReactMarkdown>{data}</ReactMarkdown>
             </div>
-          ) : null}
+          ) : (
+            <button
+              className="border borer-solid self-end justify-self-end p-4 bg-primary-500 text-primary-100"
+              disabled={loading}
+              onClick={fetchSummary}
+            >
+              Fetch Summary
+            </button>
+          )}
         </>
       ) : (
         <div className="text-neutral-600">

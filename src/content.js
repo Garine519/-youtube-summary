@@ -1,24 +1,10 @@
-const scripts = document.querySelectorAll("script");
-const RE_YOUTUBE =
-  /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
-
-/*
- * Retrieve video id from url or string
- * @param videoId video url or video id
+/**
+ * @deprecated This file is not used anymore. It was used to extract the context object from the YouTube page.
  */
-const retrieveVideoId = (videoId) => {
-  if (videoId.length === 11) {
-    return videoId;
-  }
-  const matchId = videoId.match(RE_YOUTUBE);
-  if (matchId && matchId.length) {
-    return matchId[1];
-  }
-  throw new Error("Impossible to retrieve Youtube video ID.");
-};
 
 // Loop through each script tag and find the one that contains the context object
 const getContextObject = () => {
+  const scripts = document.querySelectorAll("script");
   let contextObject = {};
   let params = "";
   scripts.forEach((script) => {
@@ -41,15 +27,16 @@ const getContextObject = () => {
   return { contextObject, params };
 };
 
+const { params, contextObject } = getContextObject();
+console.log("Context Object:", { contextObject, params });
+
 let currentUrl = location.href;
 const observeURLChanges = () => {
   const observer = new MutationObserver(() => {
     if (location.href !== currentUrl) {
       currentUrl = location.href;
-      chrome.runtime.sendMessage({
-        message: "urlChanged",
-        videoId: retrieveVideoId(currentUrl),
-      });
+      const { params, contextObject } = getContextObject();
+      console.log("Context Object:", { contextObject, params });
     }
   });
   observer.observe(document, { childList: true, subtree: true });
@@ -57,12 +44,16 @@ const observeURLChanges = () => {
 
 observeURLChanges();
 
+chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
+  if (message.ping === "popup_areYouThere")
+    sendResponse({ status: "content_yes" });
+});
+
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   // Send a response back to the background script
-  if (request.action === "getContextObjectAndParams") {
+  if (request.action === "bg_getContextObjectAndParams") {
     const { params, contextObject } = getContextObject();
-    if (!params) throw new Error("Cannot summarize this video.");
-    const videoId = retrieveVideoId(currentUrl);
-    sendResponse({ videoId, params, contextObject });
+    if (!params) throw new Error("Cannot summarize video. wrong parameters");
+    sendResponse({ params, contextObject });
   }
 });
