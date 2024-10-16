@@ -35,9 +35,7 @@ export const fetchTranscriptAndSummary = async ({
       messages: [
         {
           role: "user",
-          content: `Without using the word 'transcript', Make this transcript readable and try to paraphrase and summarize it so its understanbale in ${
-            options.language || "English"
-          }:  ${transcripts}`,
+          content: `The following is a transcript, please remove the time stamps and make it readable in ${options.language || "English"}:  ${transcripts}`,
         },
       ],
       model: "gpt-4o-mini",
