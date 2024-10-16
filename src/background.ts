@@ -3,11 +3,11 @@ import { fetchTranscriptAndSummary } from "./utils/fetchTranscript";
 const RE_YOUTUBE =
   /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((request) => {
   if (request.action === "popup_fetchData") fetchSummary(request.storageOnly);
 });
 
-const retrieveVideoId = (videoId) => {
+const retrieveVideoId = (videoId: string) => {
   if (videoId.length === 11) {
     return videoId;
   }
@@ -27,7 +27,7 @@ const fetchSummary = (storageOnly = false) => {
       if (!tabId) return;
 
       try {
-        const videoId = retrieveVideoId(activeTab.url);
+        const videoId = retrieveVideoId(activeTab.url as string);
         const storageKey = `transcript-${videoId}`;
         const currentTranscript = await chrome.storage.sync.get(storageKey);
         if (currentTranscript[storageKey]) {
@@ -52,7 +52,7 @@ const fetchSummary = (storageOnly = false) => {
         chrome.runtime.sendMessage({
           status: "error",
           message: "bg_data",
-          error: error.message,
+          error: (error as Error).message,
         });
       }
     }
