@@ -9,7 +9,7 @@ To get started with this project, follow these steps:
 
 1. Clone the repository:
   ```sh
-  git clone https://github.com/garine519/youtube-summary.git
+  git clone https://github.com/Garine519/youtube-summary.git
   ```
 2. Navigate to the project directory:
   ```sh
