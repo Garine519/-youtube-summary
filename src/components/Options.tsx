@@ -41,7 +41,7 @@ const Options = () => {
           className="underline-current text-primary-300"
           href="https://help.openai.com/en/articles/4936850-where-do-i-find-my-openai-api-key"
         >
-          here
+          here.
         </a>
       </p>
       <div className="border border-solid flex flex-col rounded-lg p-6 border-neutral-100">
@@ -51,6 +51,7 @@ const Options = () => {
             className="block text-sm font-medium mb-2 dark:text-white"
           >
             OpenAI API Key
+            <p className="text-xs mt-1 text-primary-300">We do not store your API Key anywhere on our servers. It is stored locally on your browser.</p>
           </label>
           <input
             type="email"
