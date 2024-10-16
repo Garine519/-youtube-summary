@@ -1,50 +1,36 @@
-# React + TypeScript + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+# YouTube Summary
 
-Currently, two official plugins are available:
+This project provides a summary of YouTube videos using OpenAI.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Getting Started
 
-## Expanding the ESLint configuration
+To get started with this project, follow these steps:
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+1. Clone the repository:
+  ```sh
+  git clone https://github.com/garine519/youtube-summary.git
+  ```
+2. Navigate to the project directory:
+  ```sh
+  cd youtube-summary
+  ```
+3. Install the dependencies:
+  ```sh
+  pnpm install
+  ```
 
-- Configure the top-level `parserOptions` property like this:
+## Build For development
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+1. To build the project, run:
+  ```sh
+  pnpm build
+  ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+2. Open Chrome and navigate to `chrome://extensions/.`
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+3. Enable Developer Mode by toggling the switch in the top right corner.
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+4. Click the Load unpacked button and select the build's folder.
+ 
+5. The extension should now be installed and active in your browser.
