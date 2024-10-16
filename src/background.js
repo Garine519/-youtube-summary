@@ -1,4 +1,5 @@
-const summaryEndpoint = "https://youtube-summarize-app.fly.dev/summary";
+import { fetchTranscriptAndSummary } from "./utils/fetchTranscript";
+
 const RE_YOUTUBE =
   /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
 
@@ -29,26 +30,23 @@ const fetchSummary = (storageOnly = false) => {
         const videoId = retrieveVideoId(activeTab.url);
         const storageKey = `transcript-${videoId}`;
         const currentTranscript = await chrome.storage.sync.get(storageKey);
-        if (
-          currentTranscript[storageKey] &&
-          currentTranscript[storageKey].data
-        ) {
+        if (currentTranscript[storageKey]) {
           return chrome.runtime.sendMessage({
             status: "success",
             message: "bg_data",
-            data: currentTranscript[storageKey].data,
+            data: currentTranscript[storageKey],
           });
         }
 
         if (storageOnly) return;
 
-        const response = await fetchTranscript({ videoId });
-        console.log("Response from summary endpoint:", response);
-        chrome.storage.sync.set({ [`transcript-${videoId}`]: response });
+        const { OpenAIKey } = await chrome.storage.sync.get("OpenAIKey");
+        const summary = await fetchTranscriptAndSummary({ videoId, OpenAIKey });
+        chrome.storage.sync.set({ [`transcript-${videoId}`]: summary });
         chrome.runtime.sendMessage({
           status: "success",
           message: "bg_data",
-          data: response.data,
+          data: summary,
         });
       } catch (error) {
         chrome.runtime.sendMessage({
@@ -59,23 +57,4 @@ const fetchSummary = (storageOnly = false) => {
       }
     }
   );
-};
-
-const fetchTranscript = async ({ videoId }) => {
-  try {
-    const response = await fetch(summaryEndpoint, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ videoId }),
-    });
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    return await response.json();
-  } catch (error) {
-    console.log("Error fetching from summary endpoint:", error);
-    throw new Error(error.message);
-  }
 };

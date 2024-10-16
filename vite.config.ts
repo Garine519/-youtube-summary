@@ -10,15 +10,7 @@ export default defineConfig({
         {
           src: 'public/manifest.json',
           dest: '.',
-        },
-        {
-          src: 'src/content.js',
-          dest: '.',
-        },
-        {
-          src: 'src/background.js',
-          dest: '.',
-        },
+        }
       ],
     }),
   ],
@@ -27,6 +19,10 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: './index.html',
+        background: './src/background.js',
+      },
+      output: {
+        entryFileNames: '[name].js', // To preserve the original filenames
       },
     },
   },

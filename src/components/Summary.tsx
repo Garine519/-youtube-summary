@@ -1,22 +1,30 @@
 import ReactMarkdown from "react-markdown";
 import Button from "./Button";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 export interface SummaryProps {
   data?: string;
   error?: string;
   unavailable?: boolean;
+  isFetching?: boolean;
   onSummaryFetch: () => void;
+  openOptions: () => void;
 }
 
-const Summary = ({ onSummaryFetch = () => {}, ...props }: SummaryProps) => {
-  const { data, error, unavailable } = props;
-  const [state, setState] = useState<
-    "idle" | "loading" | "success" | "error" | "unavailable"
-  >("idle");
-  const [buttonLabel, setButtonLabel] = useState<string>("Summarize video");
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+const defaultBtnLabel = "Summarize video";
+
+const Summary = ({
+  onSummaryFetch = () => {},
+  openOptions = () => {},
+  ...props
+}: SummaryProps) => {
+  const { data, error, unavailable, isFetching } = props;
+  const [state, setState] = useState<"" | "success" | "error" | "unavailable">(
+    ""
+  );
+  const [buttonLabel, setButtonLabel] = useState<string>(defaultBtnLabel);
   const [isCopied, setIsCopied] = useState<boolean>(false);
+  const timeoutsRef = useRef<NodeJS.Timeout[]>([]); // Keep track of all active timeouts
 
   useEffect(() => {
     if (data) {
@@ -26,8 +34,17 @@ const Summary = ({ onSummaryFetch = () => {}, ...props }: SummaryProps) => {
     } else if (unavailable) {
       setState("unavailable");
     }
-    setIsLoading(false);
   }, [data, error, unavailable]);
+
+  useEffect(() => {
+    if (!isFetching) {
+      timeoutsRef.current.forEach((timeout: NodeJS.Timeout) =>
+        clearTimeout(timeout)
+      );
+      timeoutsRef.current = [];
+      setButtonLabel(defaultBtnLabel);
+    }
+  }, [isFetching]);
 
   const unavailableState = (
     <div className="text-neutral-500">
@@ -47,19 +64,27 @@ const Summary = ({ onSummaryFetch = () => {}, ...props }: SummaryProps) => {
   const errorState = (
     <>
       <div className="text-red-500 text-base">Oops! {error}</div>
-      <p>Please try again.</p>
     </>
   );
 
   const fetchSummary = () => {
-    setIsLoading(true);
-    setButtonLabel("Summarizing...");
-    setTimeout(() => {
-      setButtonLabel("Almost there...");
-    }, 4000);
-    setTimeout(() => {
-      setButtonLabel("Hold on a little bit more...");
-    }, 8000);
+    timeoutsRef.current.push(
+      setTimeout(() => {
+        setButtonLabel("Summarizing...");
+      }, 0)
+    );
+    timeoutsRef.current.push(
+      setTimeout(() => {
+        setButtonLabel("Almost there...");
+      }, 4000)
+    );
+
+    timeoutsRef.current.push(
+      setTimeout(() => {
+        setButtonLabel("Hold on a little bit more...");
+      }, 8000)
+    );
+    setState("");
     onSummaryFetch();
   };
 
@@ -83,25 +108,28 @@ const Summary = ({ onSummaryFetch = () => {}, ...props }: SummaryProps) => {
   };
 
   return (
-    <div className={`text-base flex flex-col p-4 border-grey-200 w-96`}>
+    <div className={`text-base flex flex-col p-4 border-neutral-200 w-96`}>
       <div className="mb-4">
         <header className="flex justify-between items-center mb-6">
           <h1 className="text-xl text-primary-700">Video Summary</h1>
-          {data ? (
-            <Button
-              size="small"
-              label={isCopied ? "Copied to Clipboard" : "Copy"}
-              disabled={isCopied}
-              onClick={copySummary}
-            ></Button>
-          ) : null}
+          <div className="flex items-center gap-2">
+            {data ? (
+              <Button
+                size="small"
+                label={isCopied ? "Copied" : "Copy"}
+                disabled={isCopied}
+                onClick={copySummary}
+              ></Button>
+            ) : null}
+            <Button size="small" label="Options" onClick={openOptions}></Button>
+          </div>
         </header>
         <div className="mb-6">{getState()}</div>
         {state !== "success" && state !== "unavailable" ? (
           <div className="flex items-center justify-center">
             <Button
-              disabled={isLoading}
-              loading={isLoading}
+              disabled={isFetching}
+              loading={isFetching}
               label={buttonLabel}
               onClick={fetchSummary}
             ></Button>

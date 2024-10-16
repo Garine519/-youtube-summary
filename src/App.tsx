@@ -1,12 +1,16 @@
 import "./App.css";
-import { useEffect, useState } from "react";
-import Summary from "./components/Summary";
 
+import { useEffect, useState } from "react";
+import { HashRouter as Router, Routes, Route } from "react-router-dom";
+
+import Options from "./components/Options";
+import Summary from "./components/Summary";
 
 function App() {
   const [isYoutubeVideo, setIsYoutubeVideo] = useState<boolean>(true);
   const [data, setData] = useState<string>("");
   const [error, setError] = useState<string | undefined>();
+  const [isFetching, setIsFetching] = useState<boolean>(false);
 
   useEffect(() => {
     if (!chrome || !chrome.runtime || !chrome.tabs) return;
@@ -21,14 +25,12 @@ function App() {
         }
 
         setIsYoutubeVideo(true);
-        chrome.runtime.sendMessage({
-          action: "popup_fetchData",
-          storageOnly: true,
-        });
+        fetchSummary({ storageOnly: true });
       });
     };
     chrome.runtime.onMessage.addListener(function (request) {
       if (request.message === "bg_data") {
+        setIsFetching(false);
         if (request.data) {
           setData(request.data);
         }
@@ -37,17 +39,43 @@ function App() {
         }
       }
     });
+
+    // Fetch data on initial load
     init();
   }, []);
 
-  const fetchSummary = () => {
+  const fetchSummary = ({ storageOnly = false } = {}) => {
     if (!chrome || !chrome.runtime || !chrome.tabs) return;
-    chrome.runtime.sendMessage({ action: "popup_fetchData" });
+    setError(undefined);
+    if (!storageOnly) setIsFetching(true);
+    chrome.runtime.sendMessage({ action: "popup_fetchData", storageOnly });
+  };
+
+  const goToOptionsPage = () => {
+    if (!chrome || !chrome.runtime) return;
+    chrome.runtime.openOptionsPage();
   };
 
   return (
-    <Summary onSummaryFetch={fetchSummary} data={data} error={error} unavailable={!isYoutubeVideo} />
-  )
+    <Router>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <Summary
+              onSummaryFetch={fetchSummary}
+              openOptions={goToOptionsPage}
+              data={data}
+              error={error}
+              isFetching={isFetching}
+              unavailable={!isYoutubeVideo}
+            />
+          }
+        />
+        <Route path="/options" element={<Options />} />
+      </Routes>
+    </Router>
+  );
 }
 
 export default App;

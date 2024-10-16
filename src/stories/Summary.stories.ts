@@ -10,7 +10,7 @@ const meta = {
     layout: "centered",
   },
   tags: ["autodocs"],
-  args: { onSummaryFetch: fn() },
+  args: { onSummaryFetch: fn(), openOptions: fn() },
 } satisfies Meta<typeof Summary>;
 
 export default meta;

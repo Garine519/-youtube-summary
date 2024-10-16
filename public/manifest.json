@@ -1,17 +1,18 @@
 {
   "manifest_version": 3,
   "name": "Youtube Video Summary",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "description": "Summarizes youtube videos",
   "action": {
     "default_popup": "index.html"
   },
-  "background": {
-    "service_worker": "background.js"
+  "options_ui": {
+    "page": "index.html#/options",
+    "open_in_tab": true
   },
-  "host_permissions": [
-    "http://localhost:3000/summary",
-    "https://youtube-summarize-app.fly.dev/summary"
-  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
   "permissions": ["activeTab", "tabs", "scripting", "storage"]
 }
