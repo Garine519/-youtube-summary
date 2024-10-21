@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Youtube Video Summary",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Summarizes youtube videos",
   "action": {
     "default_popup": "index.html"
@@ -14,5 +14,6 @@
     "service_worker": "background.js",
     "type": "module"
   },
+  "host_permissions": ["https://www.youtube.com/*"],
   "permissions": ["tabs", "storage"]
 }
