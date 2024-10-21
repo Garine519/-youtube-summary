@@ -93,7 +93,7 @@ const Options = () => {
             className="block text-sm font-medium mb-2"
           >
             OpenAI API Key
-            <p className="text-xs mt-1 text-primary-300">
+            <p className="text-xs mt-1 ml-1 text-primary-300">
               We do not store your API Key anywhere on our servers. It is stored
               locally on your browser.
             </p>
@@ -105,11 +105,11 @@ const Options = () => {
             className="py-3 px-4 block w-full border border-neutral-200 rounded-lg text-sm focus:border-primary-400 focus:ring-primary-400 disabled:opacity-50 disabled:pointer-events-none"
             placeholder="Open AI Key"
           />
-          <p className="text-xs mt-2 text-neutral-600">
+          <p className="text-xs mt-2 ml-1 text-neutral-600">
             Guide on how to find your OpenAI API Key can be found&nbsp;
             <a
               target="_blank"
-              className="underline-current text-primary-500"
+              className="underline-current font-medium text-primary-300"
               href="https://help.openai.com/en/articles/4936850-where-do-i-find-my-openai-api-key"
             >
               here.
