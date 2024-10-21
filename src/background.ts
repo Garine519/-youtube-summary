@@ -40,8 +40,8 @@ const fetchSummary = (storageOnly = false) => {
 
         if (storageOnly) return;
 
-        const { OpenAIKey } = await chrome.storage.sync.get("OpenAIKey");
-        const summary = await fetchTranscriptAndSummary({ videoId, OpenAIKey });
+        const { options } = await chrome.storage.sync.get("options");
+        const summary = await fetchTranscriptAndSummary({ videoId, options });
         chrome.storage.sync.set({ [`transcript-${videoId}`]: summary });
         chrome.runtime.sendMessage({
           status: "success",

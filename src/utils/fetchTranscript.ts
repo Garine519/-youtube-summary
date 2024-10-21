@@ -4,22 +4,20 @@ import * as cheerio from "cheerio";
 
 export const fetchTranscriptAndSummary = async ({
   videoId,
-  command,
-  OpenAIKey,
+  options,
 }: {
   videoId: string;
-  command?: string;
-  OpenAIKey: string;
+  options: { openAIKey: string; language: string };
 }): Promise<string> => {
   try {
     if (!videoId) throw new Error("Video ID is missing.");
-    if (!OpenAIKey)
+    if (!options.openAIKey)
       throw new Error(
         "OpenAI Key is missing. Please update it from the options page."
       );
 
     const client = new OpenAI({
-      apiKey: OpenAIKey,
+      apiKey: options.openAIKey,
     });
 
     const { timedtextUrl } = await crawlYoutube(videoId);
@@ -37,9 +35,9 @@ export const fetchTranscriptAndSummary = async ({
       messages: [
         {
           role: "user",
-          content:
-            command ||
-            `Without using the word 'transcript', Make this transcript readable and try to paraphrase and summarize it so its understanbale:  ${transcripts}`,
+          content: `Without using the word 'transcript', Make this transcript readable and try to paraphrase and summarize it so its understanbale in ${
+            options.language || "English"
+          }:  ${transcripts}`,
         },
       ],
       model: "gpt-4o-mini",
