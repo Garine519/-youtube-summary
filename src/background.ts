@@ -1,7 +1,7 @@
 import { fetchTranscriptAndSummary } from "./utils/fetchTranscript";
 
 const RE_YOUTUBE =
-  /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
+  /(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?/\s]{11})/i;
 
 chrome.runtime.onMessage.addListener((request) => {
   if (request.action === "popup_fetchData") fetchSummary(request.storageOnly);
@@ -28,7 +28,9 @@ const fetchSummary = (storageOnly = false) => {
 
       try {
         const videoId = retrieveVideoId(activeTab.url as string);
-        const storageKey = `transcript-${videoId}`;
+        const { options } = await chrome.storage.sync.get("options");
+        const language = options?.language || "english";
+        const storageKey = `transcript-${videoId}-${language}`;
         const currentTranscript = await chrome.storage.sync.get(storageKey);
         if (currentTranscript[storageKey]) {
           return chrome.runtime.sendMessage({
@@ -40,9 +42,8 @@ const fetchSummary = (storageOnly = false) => {
 
         if (storageOnly) return;
 
-        const { options } = await chrome.storage.sync.get("options");
         const summary = await fetchTranscriptAndSummary({ videoId, options });
-        chrome.storage.sync.set({ [`transcript-${videoId}`]: summary });
+        chrome.storage.sync.set({ [`transcript-${videoId}-${language}`]: summary });
         chrome.runtime.sendMessage({
           status: "success",
           message: "bg_data",
