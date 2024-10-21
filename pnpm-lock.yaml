@@ -11,6 +11,9 @@ dependencies:
   cheerio:
     specifier: ^1.0.0
     version: 1.0.0
+  json:
+    specifier: ^11.0.0
+    version: 11.0.0
   marked:
     specifier: ^14.1.2
     version: 14.1.2
@@ -3435,6 +3438,12 @@ packages:
     engines: {node: '>=6'}
     hasBin: true
     dev: true
+
+  /json@11.0.0:
+    resolution: {integrity: sha512-N/ITv3Yw9Za8cGxuQqSqrq6RHnlaHWZkAFavcfpH/R52522c26EbihMxnY7A1chxfXJ4d+cEFIsyTgfi9GihrA==}
+    engines: {node: '>=0.10.0'}
+    hasBin: true
+    dev: false
 
   /jsonfile@6.1.0:
     resolution: {integrity: sha512-5dgndWOriYSm5cnYaJNhalLNDKOqFwyDB/rr1E9ZsGciGvKPs8R2xYGCacuf3z6K1YKDz182fd+fY3cn3pMqXQ==}
