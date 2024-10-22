@@ -4,7 +4,7 @@ import * as cheerio from "cheerio";
 
 export const fetchTranscriptAndSummary = async ({
   videoId,
-  options,
+  options = { openAIKey: "", language: "English" },
 }: {
   videoId: string;
   options: { openAIKey: string; language: string };
@@ -35,7 +35,7 @@ export const fetchTranscriptAndSummary = async ({
       messages: [
         {
           role: "user",
-          content: `The following is a transcript, please remove the time stamps and make it readable in ${options.language || "English"}:  ${transcripts}`,
+          content: `The following is a transcript, please remove the time stamps and make it readable in ${options.language}:  ${transcripts}`,
         },
       ],
       model: "gpt-4o-mini",
