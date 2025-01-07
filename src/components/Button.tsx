@@ -43,7 +43,7 @@ const Button = ({
         "disabled:opacity-50 disabled:pointer-events-none",
         sizeStyles[size],
         modeStyles,
-        className
+        className,
       ].join(" ")}
       {...props}
     >
