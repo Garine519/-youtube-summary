@@ -27,6 +27,10 @@ function App() {
         setIsYoutubeVideo(true);
         fetchSummary({ storageOnly: true });
       });
+      chrome.storage.sync.get(["options"], (result) => {
+        const key = result.options.openAIKey as string;
+        if (!key) setError("OpenAI Key is missing. Please update it from the options page.")
+      });
     };
     chrome.runtime.onMessage.addListener(function (request) {
       if (request.message === "bg_data") {
